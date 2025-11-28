@@ -1,0 +1,56 @@
+# Node / package managers
+node_modules/
+.pnpm-store/
+.pnp.*
+.cache/
+.vite/
+
+# Builds / outputs
+dist/
+dist-ssr/
+build/
+coverage/
+coverage-report/
+.nyc_output/
+*.tgz
+
+# Environment files
+.env
+.env.local
+.env.*.local
+.env.test
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Editor / OS files
+.vscode/
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# TypeScript / tooling
+*.tsbuildinfo
+*.d.ts
+.vscode-test/
+
+# Testing / temp
+/tmp
+/coverage
+/jest-cache
+/test-results/
+
+# Misc
+.sass-cache
+*.local
+*.swp
+*.swo
+EOF
