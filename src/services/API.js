@@ -15,20 +15,20 @@ api.interceptors.request.use(config => {
 
 export default {
     // Auth
-    login: (data) => api.post('/auth/login', data),
-    register: (data) => api.post('/auth/register', data),
-    getMe: () => api.get('/auth/me'),
+    login: (data) => api.post('/api/auth/login', data),
+    register: (data) => api.post('/api/auth/register', data),
+    getMe: () => api.get('/api/auth/me'),
 
     // Activities
-    getActivities: () => api.get('/activities'),
-    createActivity: (data) => api.post('/activities', data),
-    deleteActivity: (id) => api.delete(`/activities/${id}`),
+    getActivities: () => api.get('/api/activities'),
+    createActivity: (data) => api.post('/api/activities', data),
+    deleteActivity: (id) => api.delete(`/api/activities/${id}`),
 
     // Challenges
-    getChallenges: () => api.get('/challenges'),
-    createChallenge: (data) => api.post('/challenges', data),
+    getChallenges: () => api.get('/api/challenges'),
+    createChallenge: (data) => api.post('/api/challenges', data),
 
     // Employees
-    getEmployees: () => api.get('/employees'),
-    addEmployee: (data) => api.post('/employees', data),
+    getEmployees: () => api.get('/api/employees'),
+    addEmployee: (data) => api.post('/api/employees', data),
 };
