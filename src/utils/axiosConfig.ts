@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000',
+    // Utilise VITE_API_URL pour correspondre à Netlify
+    baseURL: import.meta.env.VITE_API_URL || 'https://sportradar2.onrender.com',
     withCredentials: true,
 });
 
@@ -9,7 +10,8 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.response.use(
     response => response,
     error => {
-        console.error('Erreur API:', error);
+        // Petit tips : affiche l'URL qui a échoué pour débugger plus vite
+        console.error('Erreur API sur:', error.config?.url, error);
         return Promise.reject(error);
     }
 );
