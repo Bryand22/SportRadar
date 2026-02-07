@@ -2,8 +2,7 @@ import axios from 'axios';
 
 const api = axios.create({
     // Vérifie bien que c'est VITE_API_URL pour Netlify
-    baseURL: import.meta.env.VITE_API_URL || 'https://sportradar2.onrender.com',
-});
+   baseURL: import.meta.env.VITE_API_URL || 'https://sportradar2.onrender.com'});
 
 // Intercepteur pour injecter le token JWT
 api.interceptors.request.use(config => {
