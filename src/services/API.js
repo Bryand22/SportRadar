@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
+    // Vérifie bien que c'est VITE_API_URL pour Netlify
     baseURL: import.meta.env.VITE_API_URL || 'https://sportradar2.onrender.com',
 });
 
@@ -15,12 +16,9 @@ api.interceptors.request.use(config => {
 
 export default {
     // Auth
-export default {
     login: (data) => api.post('/api/auth/login', data),
     register: (data) => api.post('/api/auth/register', data),
-    getActivities: () => api.get('/api/activities'),
-    
-};
+    getMe: () => api.get('/api/auth/me'),
 
     // Activities
     getActivities: () => api.get('/api/activities'),
