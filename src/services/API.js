@@ -15,9 +15,12 @@ api.interceptors.request.use(config => {
 
 export default {
     // Auth
+export default {
     login: (data) => api.post('/api/auth/login', data),
     register: (data) => api.post('/api/auth/register', data),
-    getMe: () => api.get('/api/auth/me'),
+    getActivities: () => api.get('/api/activities'),
+    
+};
 
     // Activities
     getActivities: () => api.get('/api/activities'),
