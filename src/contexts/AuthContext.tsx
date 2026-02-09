@@ -1,13 +1,32 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import axios from 'axios';
 import { User } from '../types';
+// 1. On importe l'instance 'api' que nous venons de configurer
+import apiService from '../services/API'; 
+
+// Note : Comme apiService exporte un objet avec des méthodes, 
+// on va utiliser les méthodes de l'objet pour les appels, 
+// ou l'instance axios interne si besoin.
+// Pour simplifier, on va extraire l'instance axios pour les appels directs.
+import axios from 'axios';
+const api = axios.create({
+  baseURL: 'https://sportradar2.onrender.com/api',
+});
+
+// Ré-application des intercepteurs pour la sécurité locale au contexte
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isBusinessUser: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (data: { email: string; password: string }) => Promise<void>;
   logout: () => void;
   register: (data: RegisterData) => Promise<void>;
   error: string | null;
@@ -24,43 +43,11 @@ interface RegisterData {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Configuration Axios unique
-const api = axios.create({
-  baseURL: 'http://localhost:5000/api',
-});
-
-// Intercepteur pour ajouter le token automatiquement
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
-
-// Intercepteur pour gérer les erreurs d'authentification
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      window.location.reload();
-    }
-    return Promise.reject(error);
-  }
-);
-
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Vérifier l'authentification au chargement
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -69,40 +56,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setIsLoading(false);
           return;
         }
-
+        // Utilise l'URL corrigée
         const response = await api.get('/auth/me');
         setUser(response.data);
       } catch (err: any) {
         console.error("Erreur vérification authentification:", err);
         localStorage.removeItem('token');
         setUser(null);
-
-        // Message d'erreur plus spécifique
-        if (err.response?.status === 401) {
-          setError('Session expirée, veuillez vous reconnecter');
-        }
       } finally {
         setIsLoading(false);
       }
     };
-
     checkAuth();
   }, []);
 
   const login = async (data: { email: string; password: string }) => {
-    // validation basique avant appel réseau
-    if (!data || typeof data.password !== 'string' || data.password.length === 0) {
-      throw new Error('Mot de passe manquant');
-    }
-
     try {
+      setError(null);
       const response = await api.post('/auth/login', data);
-      const userData = response.data.user;
-      setUser(userData); // <-- point-virgule ajouté
-      return response.data;
+      const { token, user: userData } = response.data;
+      localStorage.setItem('token', token);
+      setUser(userData);
     } catch (error: any) {
-      console.error('Erreur de connexion détaillée:', error);
-      const errorMessage = error.response?.data?.msg || error.message || 'Erreur de connexion';
+      const errorMessage = error.response?.data?.msg || 'Erreur de connexion';
+      setError(errorMessage);
       throw new Error(errorMessage);
     }
   };
@@ -111,37 +88,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       setIsLoading(true);
       setError(null);
-
-      console.log("Tentative d'inscription avec:", {
-        email: data.email,
-        firstName: data.firstName,
-        lastName: data.lastName
-      });
-
-      // S'assurer que consent est true
+      
       const registerData = {
         ...data,
-        consent: true, // Forcer le consentement
+        consent: true,
         isBusinessUser: data.isBusinessUser || false
       };
 
-      // data.password doit être le mot de passe brut — le serveur le hashera
-      const response = await api.post('/auth/register', data);
-      console.log("Réponse register:", response.data);
-
-      // Stocker le token et connecter l'utilisateur
+      // Appel vers le backend Render
+      const response = await api.post('/auth/register', registerData);
+      
       const { token, user: userData } = response.data;
       localStorage.setItem('token', token);
       setUser(userData);
-
-      return response.data;
     } catch (error: any) {
-      console.error("Erreur d'inscription détaillée:", error);
-
-      const serverMsg = error.response?.data?.msg ||
-        error.response?.data?.message ||
-        'Erreur lors de l\'inscription';
-
+      const serverMsg = error.response?.data?.msg || 'Erreur lors de l\'inscription';
       setError(serverMsg);
       throw new Error(serverMsg);
     } finally {
