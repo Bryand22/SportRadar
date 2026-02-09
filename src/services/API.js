@@ -1,8 +1,13 @@
 import axios from 'axios';
 
+// 🚨 MODIFICATION ICI : On force l'adresse de Render.
+// On ne laisse plus le choix au système.
 const api = axios.create({
-    // Vérifie bien que c'est VITE_API_URL pour Netlify
-   baseURL: import.meta.env.VITE_API_URL || 'https://sportradar2.onrender.com'});
+    baseURL: 'https://sportradar2.onrender.com',
+    headers: {
+        'Content-Type': 'application/json'
+    }
+});
 
 // Intercepteur pour injecter le token JWT
 api.interceptors.request.use(config => {
@@ -11,8 +16,11 @@ api.interceptors.request.use(config => {
         config.headers['Authorization'] = `Bearer ${token}`;
     }
     return config;
+}, error => {
+    return Promise.reject(error);
 });
 
+// On exporte les fonctions prêtes à l'emploi
 export default {
     // Auth
     login: (data) => api.post('/api/auth/login', data),
