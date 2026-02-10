@@ -1,15 +1,14 @@
 import axios from 'axios';
 
-// 🚨 MODIFICATION ICI : On force l'adresse de Render.
-// On ne laisse plus le choix au système.
 const api = axios.create({
+    // On garde l'adresse de base de Render
     baseURL: 'https://sportradar2.onrender.com',
     headers: {
         'Content-Type': 'application/json'
     }
 });
 
-// Intercepteur pour injecter le token JWT
+// Intercepteur pour le token
 api.interceptors.request.use(config => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -20,23 +19,20 @@ api.interceptors.request.use(config => {
     return Promise.reject(error);
 });
 
-// On exporte les fonctions prêtes à l'emploi
+// On exporte l'instance 'api' elle-même pour le Context
+// ET les fonctions raccourcies
+export const apiInstance = api;
+
 export default {
-    // Auth
+    // Auth - Vérifie bien si ton backend utilise /api/auth ou juste /auth
     login: (data) => api.post('/api/auth/login', data),
     register: (data) => api.post('/api/auth/register', data),
     getMe: () => api.get('/api/auth/me'),
 
-    // Activities
+    // Activités
     getActivities: () => api.get('/api/activities'),
     createActivity: (data) => api.post('/api/activities', data),
-    deleteActivity: (id) => api.delete(`/api/activities/${id}`),
-
-    // Challenges
-    getChallenges: () => api.get('/api/challenges'),
-    createChallenge: (data) => api.post('/api/challenges', data),
-
-    // Employees
-    getEmployees: () => api.get('/api/employees'),
-    addEmployee: (data) => api.post('/api/employees', data),
+    
+    // On exporte aussi l'objet api pour qu'il soit utilisable partout
+    api
 };
