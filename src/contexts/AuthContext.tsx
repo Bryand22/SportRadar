@@ -1,25 +1,7 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { User } from '../types';
-// 1. On importe l'instance 'api' que nous venons de configurer
-import apiService from '../services/API'; 
-
-// Note : Comme apiService exporte un objet avec des méthodes, 
-// on va utiliser les méthodes de l'objet pour les appels, 
-// ou l'instance axios interne si besoin.
-// Pour simplifier, on va extraire l'instance axios pour les appels directs.
-import axios from 'axios';
-const api = axios.create({
-  baseURL: 'https://sportradar2.onrender.com/api',
-});
-
-// Ré-application des intercepteurs pour la sécurité locale au contexte
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+// On utilise UNIQUEMENT notre service centralisé
+import api from '../services/API'; 
 
 interface AuthContextType {
   user: User | null;
@@ -56,8 +38,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setIsLoading(false);
           return;
         }
-        // Utilise l'URL corrigée
-        const response = await api.get('/auth/me');
+        // Utilise la méthode getMe de ton API.js
+        const response = await api.getMe();
         setUser(response.data);
       } catch (err: any) {
         console.error("Erreur vérification authentification:", err);
@@ -73,7 +55,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (data: { email: string; password: string }) => {
     try {
       setError(null);
-      const response = await api.post('/auth/login', data);
+      // Utilise la méthode login de ton API.js
+      const response = await api.login(data);
       const { token, user: userData } = response.data;
       localStorage.setItem('token', token);
       setUser(userData);
@@ -95,13 +78,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isBusinessUser: data.isBusinessUser || false
       };
 
-      // Appel vers le backend Render
-      const response = await api.post('/auth/register', registerData);
+      // ✅ C'EST ICI LA CLÉ : On utilise la fonction register définie dans API.js
+      const response = await api.register(registerData);
       
       const { token, user: userData } = response.data;
       localStorage.setItem('token', token);
       setUser(userData);
     } catch (error: any) {
+      console.error("Détail erreur register:", error.response);
       const serverMsg = error.response?.data?.msg || 'Erreur lors de l\'inscription';
       setError(serverMsg);
       throw new Error(serverMsg);
