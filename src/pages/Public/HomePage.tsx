@@ -11,7 +11,10 @@ import OpenWeatherMap from '@/components/OpenWeatherMap';
 export default function HomePage() {
   return (
     <>
-      <OpenWeatherMap />
+      {/* ON ENVELOPPE LA METEO DANS UNE DIV FIXE EN BAS À DROITE */}
+      <div className="fixed bottom-6 right-6 z-[9999]">
+        <OpenWeatherMap />
+      </div>
 
       {/* Hero Section */}
       <section className="relative h-[80vh] md:h-[90vh] overflow-hidden">
