@@ -24,7 +24,7 @@ const PartnersPage = lazy(() => import('./pages/Public/PartnersPage'));
 const FAQ = lazy(() => import('./pages/Public/FAQ'));
 
 // 2. AJOUT DE LA PAGE CGV (Précédemment créée)
-const TermsPage = lazy(() => import('./pages/Public/Cgv'));
+const TermsPage = lazy(() => import('./pages/Public/CGV'));
 
 // User dashboard pages
 const UserDashboard = lazy(() => import('./pages/user/UserDashboard'));
