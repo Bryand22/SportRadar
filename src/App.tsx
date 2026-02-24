@@ -4,6 +4,9 @@ import { AuthProvider } from './contexts/AuthContext';
 import { FavoritesProvider } from './contexts/FavoritesContext';
 import LoadingSpinner from './components/ui/LoadingSpinner';
 
+// 1. IMPORT DU BANDEAU DE COOKIES
+import CookieBanner from './components/Common/CookieBanner'; 
+
 // Layouts
 import PublicLayout from './layouts/PublicLayout';
 import DashboardLayout from './layouts/DashboardLayout';
@@ -17,7 +20,11 @@ const LoginPage = lazy(() => import('./pages/auth/LoginPage'));
 const RegisterPage = lazy(() => import('./pages/auth/RegisterPage'));
 const PolitiqueRGPD = lazy(() => import('./pages/Public/PolitiqueRGPD'));
 const MentionsLegales = lazy(() => import('./pages/Public/MentionsLegales'));
+const PartnersPage = lazy(() => import('./pages/Public/PartnersPage'));
 const FAQ = lazy(() => import('./pages/Public/FAQ'));
+
+// 2. AJOUT DE LA PAGE CGV (Précédemment créée)
+const TermsPage = lazy(() => import('./pages/Public/Cgv'));
 
 // User dashboard pages
 const UserDashboard = lazy(() => import('./pages/user/UserDashboard'));
@@ -36,6 +43,9 @@ function App() {
   return (
     <AuthProvider>
       <FavoritesProvider>
+        {/* 3. PLACEMENT DU COMPOSANT ICI */}
+        <CookieBanner /> 
+        
         <Suspense fallback={<LoadingSpinner />}>
           <Routes>
             {/* Public routes */}
@@ -46,9 +56,13 @@ function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/politique-confidentialite" element={<PolitiqueRGPD />} />
-              {/* alias possible */}
               <Route path="/politique-rgpd" element={<PolitiqueRGPD />} />
+              <Route path="/partenaires" element={<PartnersPage />} />
               <Route path="/mentions-legales" element={<MentionsLegales />} />
+              
+              {/* 4. AJOUT DE LA ROUTE CGV */}
+              <Route path="/cgv" element={<TermsPage />} />
+              
               <Route path="/faq" element={<FAQ />} />
             </Route>
 

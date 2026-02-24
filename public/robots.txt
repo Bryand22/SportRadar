@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# On empêche l'indexation des pages privées (tableaux de bord)
+Disallow: /dashboard/
+Disallow: /business/
+
+Sitemap: https://sportradart.netlify.app/sitemap.xml
